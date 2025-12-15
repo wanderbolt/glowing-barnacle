@@ -37,3 +37,37 @@ window.readJson=function(data){
   var tbody=document.createElement("tbody");
   for(var r=0;r<rows.length;r++){
     var tr=document.createElement("tr");
+
+    for(var c=0;c<headers.length;c++){
+      var key=headers[c];
+      var value=rows[r][key];
+
+      // Column 4: force 2 decimals
+      if(key==="Average_Score" && value!=="" && !isNaN(value)){
+        value=Number(value).toFixed(2);
+      }
+
+      // Column 5: percentage
+      if(key==="Win_Rate" && value!=="" && !isNaN(value)){
+        value=Math.round(Number(value)*100)+"%";
+      }
+
+      var td=document.createElement("td");
+      td.textContent=value;
+      td.style.border="1px solid #ccc";
+      td.style.padding="6px";
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+  table.appendChild(tbody);
+};
+
+(function(){
+  var s=document.createElement("script");
+  s.src=GOOGLE_APPS_SCRIPT_URL+
+        "?id="+GOOGLE_SHEET_ID+
+        "&sheet="+SHEET_NAME+
+        "&callback=readJson";
+  document.body.appendChild(s);
+})();
