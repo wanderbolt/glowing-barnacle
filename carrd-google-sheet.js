@@ -44,3 +44,4 @@ window.readJson=function(data){
   s.src=GOOGLE_APPS_SCRIPT_URL+"?id="+GOOGLE_SHEET_ID+"&sheet="+SHEET_NAME+"&callback=readJson";
   document.body.appendChild(s);
 })();
+
