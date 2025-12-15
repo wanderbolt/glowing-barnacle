@@ -3,31 +3,20 @@ var GOOGLE_SHEET_ID = "1O2SRGHuiGE0X6KCCKcRYvOaX4g0GU8Qk8BrooeVONxE";
 var SHEET_NAME = "2025";
 var TABLE_ID = "table01";
 
-// Wait until the table container exists
 function waitForTable(callback) {
     var attempts = 0;
     var interval = setInterval(function() {
         var container = document.getElementById(TABLE_ID);
         attempts++;
-        if(container) {
-            clearInterval(interval);
-            callback(container);
-        }
-        if(attempts > 50) { // stop after ~5 seconds
-            clearInterval(interval);
-            console.error("Table container not found.");
-        }
+        if(container) { clearInterval(interval); callback(container); }
+        if(attempts > 50) { clearInterval(interval); console.error("Table container not found."); }
     }, 100);
 }
 
-// JSONP callback
-window.readJson = function(data) {
-    waitForTable(function(container) {
+window.readJson = function(data){
+    waitForTable(function(container){
         var rows = data[SHEET_NAME];
-        if(!rows || !rows.length) {
-            container.innerHTML = "<p>No data found.</p>";
-            return;
-        }
+        if(!rows || !rows.length){ container.innerHTML = "<p>No data found.</p>"; return; }
 
         container.innerHTML = "";
         var table = document.createElement("table");
@@ -39,7 +28,7 @@ window.readJson = function(data) {
         var headers = Object.keys(rows[0]);
         var thead = document.createElement("thead");
         var trHead = document.createElement("tr");
-        headers.forEach(function(h) {
+        headers.forEach(function(h){
             var th = document.createElement("th");
             th.textContent = h.replace(/_/g," ");
             th.style.border = "1px solid #ccc";
@@ -51,18 +40,13 @@ window.readJson = function(data) {
 
         // BODY
         var tbody = document.createElement("tbody");
-        rows.forEach(function(row) {
+        rows.forEach(function(row){
             var tr = document.createElement("tr");
-            headers.forEach(function(key) {
+            headers.forEach(function(key){
                 var value = row[key];
 
-                if(key === "Average_Score" && !isNaN(value)) {
-                    value = Number(value).toFixed(2);
-                }
-
-                if(key === "Win_Rate" && !isNaN(value)) {
-                    value = Math.round(Number(value) * 100) + "%";
-                }
+                if(key === "Average_Score" && !isNaN(value)) value = Number(value).toFixed(2);
+                if(key === "Win_Rate" && !isNaN(value)) value = Math.round(Number(value)*100) + "%";
 
                 var td = document.createElement("td");
                 td.textContent = value;
@@ -76,8 +60,7 @@ window.readJson = function(data) {
     });
 };
 
-// Load JSONP from Google Apps Script
-(function() {
+(function(){
     var s = document.createElement("script");
     s.src = GOOGLE_APPS_SCRIPT_URL + "?id=" + GOOGLE_SHEET_ID + "&sheet=" + SHEET_NAME + "&callback=readJson";
     document.body.appendChild(s);
